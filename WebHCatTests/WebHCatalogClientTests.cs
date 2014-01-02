@@ -13,9 +13,9 @@
 		private const string UserName = "root";
 
 		private const string ServerUrl = "127.0.0.1";
-		
+
 		private const int HCatalogPort = 50111;
-		
+
 		private const string HdfsUrl = "10.0.2.15";
 
 		private const int HdfsPort = 8020;
@@ -69,7 +69,7 @@
 				VerifyDatabase(uniqueName, false);
 
 				var client = BuildHCatalogClient();
-				
+
 				var createDbTask = client.CreateDatabase(uniqueName, null, Location);
 				createDbTask.Wait();
 				Assert.IsTrue(createDbTask.Result);

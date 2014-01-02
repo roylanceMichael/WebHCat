@@ -11,5 +11,7 @@
 		Task<bool> CreateDatabase(string database, string comment, string location);
 
 		Task<bool> DeleteDatabase(string database);
+
+		Task<GetTablesModel> GetTables(string database);
 	}
 }

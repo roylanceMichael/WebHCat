@@ -53,5 +53,19 @@
 					       database,
 					       this.userName);
 		}
+
+		public string GetTablesUrl(string database)
+		{
+			const string GetTablesTemplate = "http://{0}:{1}/templeton/v1/ddl/database/{2}/table";
+			const string GetTablesTemplateNoKerberos = GetTablesTemplate + "?user.name={3}";
+
+			return this.useKerberos
+				       ? GetTablesTemplate.FormatTemplate(this.hCatInfo.Server, this.hCatInfo.Port, database)
+				       : GetTablesTemplateNoKerberos.FormatTemplate(
+					       this.hCatInfo.Server,
+					       this.hCatInfo.Port,
+					       database,
+					       this.userName);
+		}
 	}
 }

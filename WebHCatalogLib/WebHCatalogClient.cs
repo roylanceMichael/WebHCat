@@ -77,6 +77,13 @@
 			return actualResponse.ContainsKey("database") && actualResponse.ContainsValue(database);
 		}
 
+		public async Task<GetTablesModel> GetTables(string database)
+		{
+			var getTablesUrl = this.urlBuilder.GetTablesUrl(database);
+			var result = await this.GetJson(getTablesUrl);
+			return JsonConvert.DeserializeObject<GetTablesModel>(result);
+		}
+
 		protected Task<string> DeleteJson(string url, string data)
 		{
 			return this.SendJson(url, data, Delete);
