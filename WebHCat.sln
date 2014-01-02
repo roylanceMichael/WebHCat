@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHCatIntegrationTests", "WebHCatTests\WebHCatIntegrationTests.csproj", "{0E5ABE29-F22E-44E5-9408-D65C5D15CF79}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Settings", "Settings", "{DDDFFEE1-A207-4D20-BBFB-B663C7B4F7F5}"
+	ProjectSection(SolutionItems) = preProject
+		Settings.StyleCop = Settings.StyleCop
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHCatalogLib", "WebHCatalogLib\WebHCatalogLib.csproj", "{F0C81C41-A726-43B6-883D-57863489F07E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0E5ABE29-F22E-44E5-9408-D65C5D15CF79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E5ABE29-F22E-44E5-9408-D65C5D15CF79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E5ABE29-F22E-44E5-9408-D65C5D15CF79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E5ABE29-F22E-44E5-9408-D65C5D15CF79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0C81C41-A726-43B6-883D-57863489F07E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0C81C41-A726-43B6-883D-57863489F07E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0C81C41-A726-43B6-883D-57863489F07E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0C81C41-A726-43B6-883D-57863489F07E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
