@@ -5,6 +5,7 @@
 
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+	using Roylance.WebHCatalogLib.Constants;
 	using Roylance.WebHCatalogLib.Models;
 	using Roylance.WebHCatTests.TestBase;
 
@@ -12,16 +13,16 @@
 	public class TableTests : WebHCatalogClientTestBase
 	{
 		[TestMethod]
-		public void CreatesTableWithNoColumns()
+		public void CreatesTableWithOneColumn()
 		{
 			// arrange
 			this.CreateDatabaseIfNotExists();
 			var uniqueTableName = BuildUniqueName();
 
 			var createTableRequest = new CreateTableRequest
-				                         {
-					                         Database = DatabaseName, 
-																	 Table = uniqueTableName, 
+																 {
+																	 Database = DatabaseName,
+																	 Table = uniqueTableName,
 																	 Comment = "what is this",
 																	 Columns = new List<Column>
 																		           {
@@ -32,7 +33,79 @@
 																				           }
 																		           }
 
-				                         };
+																 };
+
+			var client = BuildHCatalogClient();
+
+			// act
+			var task = client.CreateTable(createTableRequest);
+			task.Wait();
+
+			// assert
+			Assert.IsTrue(task.Result);
+
+			var getTablesTask = client.GetTables(DatabaseName);
+			getTablesTask.Wait();
+
+			Assert.IsTrue(getTablesTask.Result.Tables.Contains(uniqueTableName));
+		}
+
+		[TestMethod]
+		public void CreatesTableWithSixColumns()
+		{
+			// arrange
+			this.CreateDatabaseIfNotExists();
+			var uniqueTableName = BuildUniqueName();
+
+			var createTableRequest = new CreateTableRequest
+			{
+				Database = DatabaseName,
+				Table = uniqueTableName,
+				Comment = "what is this",
+				Location = "/testtable",
+				Format = new TableFormatRequest
+									 {
+										 RowFormat = new RowFormatRequest
+																	 {
+																		 FieldsTerminatedBy = ","
+																	 },
+										 StoredAs = TableFormats.TextFile
+									 },
+				Columns = new List<Column>
+																		           {
+																			           new Column
+																				           {
+																					           Name = "a",
+																										 Type = ColumnTypes.String
+																				           },
+																									new Column
+																				           {
+																					           Name = "b",
+																										 Type = ColumnTypes.String
+																				           },
+																									 new Column
+																				           {
+																					           Name = "c",
+																										 Type = ColumnTypes.String
+																				           },
+																									 new Column
+																				           {
+																					           Name = "d",
+																										 Type = ColumnTypes.String
+																				           },
+																									 new Column
+																				           {
+																					           Name = "e",
+																										 Type = ColumnTypes.String
+																				           },
+																									 new Column
+																				           {
+																					           Name = "f",
+																										 Type = ColumnTypes.String
+																				           }
+																		           }
+
+			};
 
 			var client = BuildHCatalogClient();
 

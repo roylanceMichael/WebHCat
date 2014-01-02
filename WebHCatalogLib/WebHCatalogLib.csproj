@@ -43,14 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\TableFormats.cs" />
     <Compile Include="IRestfulWebService.cs" />
     <Compile Include="IWebHCatalogClient.cs" />
     <Compile Include="Models\Column.cs" />
-    <Compile Include="Models\ColumnTypes.cs" />
+    <Compile Include="Constants\ColumnTypes.cs" />
     <Compile Include="Models\Requests\CreateDatabaseRequest.cs" />
     <Compile Include="Models\Requests\CreateTableRequest.cs" />
     <Compile Include="Models\Credential.cs" />
     <Compile Include="Models\Requests\RequestBase.cs" />
+    <Compile Include="Models\Requests\RowFormatRequest.cs" />
+    <Compile Include="Models\Requests\TableFormatRequest.cs" />
     <Compile Include="Models\Responses\GetDatabasesResponse.cs" />
     <Compile Include="Models\Responses\GetTablesResponse.cs" />
     <Compile Include="Models\ServerInformation.cs" />

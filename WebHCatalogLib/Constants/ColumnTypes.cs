@@ -1,4 +1,4 @@
-﻿namespace Roylance.WebHCatalogLib.Models
+﻿namespace Roylance.WebHCatalogLib.Constants
 {
 	public static class ColumnTypes
 	{

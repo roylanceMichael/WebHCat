@@ -14,31 +14,19 @@
 
 		private const string Delete = "DELETE";
 
-		protected string SendJson(string url, string data, string method)
-		{
-			url.CheckWhetherArgumentIsNull("url");
-			data.CheckWhetherArgumentIsNull("data");
-			method.CheckWhetherArgumentIsNull("method");
-
-			var bytes = Encoding.Default.GetBytes(data);
-			try
-			{
-				var results = this.UploadData(url, method, bytes);
-				return Encoding.Default.GetString(results);
-			}
-			catch (WebException e)
-			{
-				var errorObj = new { Error = e.Message };
-				return JsonConvert.SerializeObject(errorObj, Utilities.DefaultSerializerSettings);
-			}
-		}
-
 		public T GetJson<T>(string url)
 		{
 			url.CheckWhetherArgumentIsNull("url");
-			var result = this.DownloadData(new Uri(url));
-			var strResult = Encoding.Default.GetString(result);
-			return JsonConvert.DeserializeObject<T>(strResult, Utilities.DefaultSerializerSettings);
+			try
+			{
+				var result = this.DownloadData(new Uri(url));
+				var strResult = Encoding.Default.GetString(result);
+				return JsonConvert.DeserializeObject<T>(strResult, Utilities.DefaultSerializerSettings);
+			}
+			catch (WebException e)
+			{
+				return JsonConvert.DeserializeObject<T>(BuildErrorObject(e.Message));
+			}
 		}
 
 		public T DeleteJson<T>(string url, string data)
@@ -63,6 +51,30 @@
 			data.CheckWhetherArgumentIsNull("data");
 			var result = this.SendJson(url, data, Put);
 			return JsonConvert.DeserializeObject<T>(result, Utilities.DefaultSerializerSettings);
+		}
+
+		protected string SendJson(string url, string data, string method)
+		{
+			url.CheckWhetherArgumentIsNull("url");
+			data.CheckWhetherArgumentIsNull("data");
+			method.CheckWhetherArgumentIsNull("method");
+
+			var bytes = Encoding.Default.GetBytes(data);
+			try
+			{
+				var results = this.UploadData(url, method, bytes);
+				return Encoding.Default.GetString(results);
+			}
+			catch (WebException e)
+			{
+				return BuildErrorObject(e.Message);
+			}
+		}
+
+		private static string BuildErrorObject(string message)
+		{
+			var errorObject = new { Error = message };
+			return JsonConvert.SerializeObject(errorObject, Utilities.DefaultSerializerSettings);
 		}
 	}
 }

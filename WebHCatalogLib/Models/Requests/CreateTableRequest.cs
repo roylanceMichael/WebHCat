@@ -16,6 +16,18 @@
 
 		public string Comment { get; set; }
 
+		public string Location { get; set; }
+
+		public TableFormatRequest Format { get; set; }
+
+		public string External
+		{
+			get
+			{
+				return bool.TrueString.ToLower();
+			}
+		}
+
 		public IEnumerable<Column> Columns { get; set; }
 
 		public override string ToJson(params object[] args)
