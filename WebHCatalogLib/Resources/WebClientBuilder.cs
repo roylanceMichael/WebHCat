@@ -21,9 +21,9 @@
 			this.useKerberos = useKerberos;
 		}
 
-		public WebClient BuildWebClient()
+		public IRestfulWebService BuildWebClient()
 		{
-			var webClient = new WebClient();
+			var webClient = new RestfulWebService();
 			webClient.Headers.Add(ContentType, JsonType);
 
 			if (this.useKerberos)

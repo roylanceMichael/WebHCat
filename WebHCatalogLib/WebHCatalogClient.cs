@@ -1,11 +1,8 @@
 ﻿namespace Roylance.WebHCatalogLib
 {
-	using System;
 	using System.Collections.Generic;
-	using System.Text;
 
 	using Newtonsoft.Json;
-	using Newtonsoft.Json.Serialization;
 
 	using Roylance.WebHCatalogLib.Models;
 	using Roylance.WebHCatalogLib.Resources;
@@ -15,15 +12,7 @@
 	{
 		private const string WebHdfsLocation = "hdfs://{0}:{1}/{2}";
 
-		private const string Post = "POST";
-
-		private const string Put = "PUT";
-
-		private const string Delete = "DELETE";
-
 		private readonly ServerInfoModel hdfsInfo;
-
-		private readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
 
 		private readonly UrlBuilder urlBuilder;
 
@@ -40,24 +29,36 @@
 			this.webClientBuilder = new WebClientBuilder(credentials, useKerberos);
 		}
 
-		public async Task<GetDatabasesModel> GetDatabases()
+		public Task<GetDatabasesModel> GetDatabases()
 		{
 			var databaseUrl = this.urlBuilder.GetDatabasesUrl();
-			var jsonResult = await this.GetJson(databaseUrl);
-			return JsonConvert.DeserializeObject<GetDatabasesModel>(jsonResult, this.serializerSettings);
+
+			return Task<GetDatabasesModel>.Factory.StartNew(
+				() =>
+				{
+					using (var client = this.webClientBuilder.BuildWebClient())
+					{
+						return client.GetJson<GetDatabasesModel>(databaseUrl);
+					}
+				});
 		}
 
-		public async Task<bool> DeleteDatabase(string database)
+		public Task<bool> DeleteDatabase(string database)
 		{
 			var deleteDatabaseUrl = this.urlBuilder.DeleteDatabaseUrl(database);
 
-			var jsonResult = await this.DeleteJson(deleteDatabaseUrl, string.Empty);
-			var dictionaryResult = this.DeserializeIntoDictionary(jsonResult);
-
-			return dictionaryResult.ContainsKey("database");
+			return Task<bool>.Factory.StartNew(
+				() =>
+				{
+					using (var restfulService = this.webClientBuilder.BuildWebClient())
+					{
+						var result = restfulService.DeleteJson<Dictionary<string, string>>(deleteDatabaseUrl, string.Empty);
+						return result.ContainsKey("database") && result.ContainsValue(database);
+					}
+				});
 		}
 
-		public async Task<bool> CreateDatabase(string database, string comment, string location)
+		public Task<bool> CreateDatabase(string database, string comment, string location)
 		{
 			var createDatabaseUrl = this.urlBuilder.CreateDatabaseUrl(database);
 
@@ -70,73 +71,32 @@
 				jsonDictionary["comment"] = comment;
 			}
 
-			var responseString = await this.PutJson(createDatabaseUrl, JsonConvert.SerializeObject(jsonDictionary));
+			var inputJson = JsonConvert.SerializeObject(jsonDictionary);
 
-			var actualResponse = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseString, this.serializerSettings);
+			return Task<bool>.Factory.StartNew(
+				() =>
+				{
+					using (var restService = this.webClientBuilder.BuildWebClient())
+					{
+						var response = restService.PutJson<Dictionary<string, string>>(createDatabaseUrl, inputJson);
 
-			return actualResponse.ContainsKey("database") && actualResponse.ContainsValue(database);
+						// project response to true/false
+						return response.ContainsKey("database") && response.ContainsValue(database);
+					}
+				});
 		}
 
-		public async Task<GetTablesModel> GetTables(string database)
+		public Task<GetTablesModel> GetTables(string database)
 		{
 			var getTablesUrl = this.urlBuilder.GetTablesUrl(database);
-			var result = await this.GetJson(getTablesUrl);
-			return JsonConvert.DeserializeObject<GetTablesModel>(result);
-		}
-
-		protected Task<string> DeleteJson(string url, string data)
-		{
-			return this.SendJson(url, data, Delete);
-		}
-
-		protected Task<string> PostJson(string url, string data)
-		{
-			return this.SendJson(url, data, Post);
-		}
-
-		protected Task<string> PutJson(string url, string data)
-		{
-			return this.SendJson(url, data, Put);
-		}
-
-		protected Task<string> SendJson(string url, string data, string method)
-		{
-			url.CheckWhetherArgumentIsNull("url");
-			data.CheckWhetherArgumentIsNull("data");
-			method.CheckWhetherArgumentIsNull("method");
-
-			return Task<string>.Factory.StartNew(
+			return Task<GetTablesModel>.Factory.StartNew(
 				() =>
 				{
-					var bytes = Encoding.Default.GetBytes(data);
-					using (var client = this.webClientBuilder.BuildWebClient())
+					using (var restService = this.webClientBuilder.BuildWebClient())
 					{
-						var results = client.UploadData(url, method, bytes);
-						return Encoding.Default.GetString(results);
+						return restService.GetJson<GetTablesModel>(getTablesUrl);
 					}
 				});
-		}
-
-		protected Task<string> GetJson(string url)
-		{
-			url.CheckWhetherArgumentIsNull("url");
-
-			return Task<string>.Factory.StartNew(
-				() =>
-				{
-					using (var client = this.webClientBuilder.BuildWebClient())
-					{
-						var result = client.DownloadData(new Uri(url));
-
-						return Encoding.Default.GetString(result);
-					}
-				});
-		}
-
-		protected IDictionary<string, string> DeserializeIntoDictionary(string result)
-		{
-			result.CheckWhetherArgumentIsNull("result");
-			return JsonConvert.DeserializeObject<Dictionary<string, string>>(result);
 		}
 	}
 }
