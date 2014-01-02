@@ -2,9 +2,9 @@
 {
 	using Roylance.WebHCatalogLib.Resources;
 
-	public class ServerInfoModel
+	public class ServerInformation
 	{
-		public ServerInfoModel(string server, int port)
+		public ServerInformation(string server, int port)
 		{
 			server.CheckWhetherArgumentIsNull("server");
 

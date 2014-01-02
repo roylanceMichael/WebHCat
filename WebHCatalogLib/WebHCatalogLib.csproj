@@ -43,12 +43,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IRestfulWebService.cs" />
     <Compile Include="IWebHCatalogClient.cs" />
-    <Compile Include="Models\CredentialModel.cs" />
-    <Compile Include="Models\GetDatabasesModel.cs" />
-    <Compile Include="Models\GetTablesModel.cs" />
-    <Compile Include="Models\ServerInfoModel.cs" />
+    <Compile Include="Models\Column.cs" />
+    <Compile Include="Models\ColumnTypes.cs" />
+    <Compile Include="Models\Requests\CreateDatabaseRequest.cs" />
+    <Compile Include="Models\Requests\CreateTableRequest.cs" />
+    <Compile Include="Models\Credential.cs" />
+    <Compile Include="Models\Requests\RequestBase.cs" />
+    <Compile Include="Models\Responses\GetDatabasesResponse.cs" />
+    <Compile Include="Models\Responses\GetTablesResponse.cs" />
+    <Compile Include="Models\ServerInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\RestfulWebService.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Resources\UrlBuilder.cs" />
     <Compile Include="Resources\Utilities.cs" />
     <Compile Include="Resources\WebClientBuilder.cs" />

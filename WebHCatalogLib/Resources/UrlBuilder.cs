@@ -8,14 +8,14 @@
 
 		private readonly bool useKerberos;
 
-		private readonly ServerInfoModel hCatInfo;
+		private readonly ServerInformation hCatInformation;
 
-		public UrlBuilder(ServerInfoModel hCatInfo, CredentialModel credential, bool useKerberos)
+		public UrlBuilder(ServerInformation hCatInformation, Credential credential, bool useKerberos)
 		{
 			credential.CheckWhetherArgumentIsNull("credential");
-			hCatInfo.CheckWhetherArgumentIsNull("hCatInfo");
+			hCatInformation.CheckWhetherArgumentIsNull("hCatInformation");
 
-			this.hCatInfo = hCatInfo;
+			this.hCatInformation = hCatInformation;
 			this.userName = credential.UserName;
 			this.useKerberos = useKerberos;
 		}
@@ -26,45 +26,69 @@
 			const string GetDatabaseTemplateNoKerberos = GetDatabaseTemplate + "?user.name={2}";
 
 			return this.useKerberos
-				       ? GetDatabaseTemplate.FormatTemplate(this.hCatInfo.Server, this.hCatInfo.Port)
-							 : GetDatabaseTemplateNoKerberos.FormatTemplate(this.hCatInfo.Server, this.hCatInfo.Port, this.userName);
+				       ? GetDatabaseTemplate.FormatTemplate(this.hCatInformation.Server, this.hCatInformation.Port)
+							 : GetDatabaseTemplateNoKerberos.FormatTemplate(this.hCatInformation.Server, this.hCatInformation.Port, this.userName);
 		}
 
 		public string CreateDatabaseUrl(string database)
 		{
+			database.CheckWhetherArgumentIsNull("database");
+
 			const string CreateDatabaseTemplate = "http://{0}:{1}/templeton/v1/ddl/database/{2}";
 			const string CreateDatabaseTemplateNoKerberos = CreateDatabaseTemplate + "?user.name={3}";
 
 			return this.useKerberos
-				       ? CreateDatabaseTemplate.FormatTemplate(this.hCatInfo.Server, this.hCatInfo.Port, database)
-				       : CreateDatabaseTemplateNoKerberos.FormatTemplate(this.hCatInfo.Server, this.hCatInfo.Port, database, this.userName);
+				       ? CreateDatabaseTemplate.FormatTemplate(this.hCatInformation.Server, this.hCatInformation.Port, database)
+				       : CreateDatabaseTemplateNoKerberos.FormatTemplate(this.hCatInformation.Server, this.hCatInformation.Port, database, this.userName);
 		}
 
 		public string DeleteDatabaseUrl(string database)
 		{
+			database.CheckWhetherArgumentIsNull("database");
+
 			const string DeleteDatabaseTemplate = "http://{0}:{1}/templeton/v1/ddl/database/{2}";
 			const string DeleteDatabaseTemplateNoKerberos = DeleteDatabaseTemplate + "?user.name={3}";
 
 			return this.useKerberos
-				       ? DeleteDatabaseTemplate.FormatTemplate(this.hCatInfo.Server, this.hCatInfo.Port, database)
+				       ? DeleteDatabaseTemplate.FormatTemplate(this.hCatInformation.Server, this.hCatInformation.Port, database)
 				       : DeleteDatabaseTemplateNoKerberos.FormatTemplate(
-					       this.hCatInfo.Server,
-					       this.hCatInfo.Port,
+					       this.hCatInformation.Server,
+					       this.hCatInformation.Port,
 					       database,
 					       this.userName);
 		}
 
 		public string GetTablesUrl(string database)
 		{
+			database.CheckWhetherArgumentIsNull("database");
+
 			const string GetTablesTemplate = "http://{0}:{1}/templeton/v1/ddl/database/{2}/table";
 			const string GetTablesTemplateNoKerberos = GetTablesTemplate + "?user.name={3}";
 
 			return this.useKerberos
-				       ? GetTablesTemplate.FormatTemplate(this.hCatInfo.Server, this.hCatInfo.Port, database)
+				       ? GetTablesTemplate.FormatTemplate(this.hCatInformation.Server, this.hCatInformation.Port, database)
 				       : GetTablesTemplateNoKerberos.FormatTemplate(
-					       this.hCatInfo.Server,
-					       this.hCatInfo.Port,
+					       this.hCatInformation.Server,
+					       this.hCatInformation.Port,
 					       database,
+					       this.userName);
+		}
+
+		public string CreateTableUrl(string database, string table)
+		{
+			database.CheckWhetherArgumentIsNull("database");
+			table.CheckWhetherArgumentIsNull("table");
+
+			const string CreateTableTemplate = "http://{0}:{1}/templeton/v1/ddl/database/{2}/table/{3}";
+			const string CreateTableTemplateNoKerberos = CreateTableTemplate + "?user.name={4}";
+
+			return this.useKerberos
+				       ? CreateTableTemplate.FormatTemplate(this.hCatInformation.Server, this.hCatInformation.Port, database, table)
+				       : CreateTableTemplateNoKerberos.FormatTemplate(
+					       this.hCatInformation.Server,
+					       this.hCatInformation.Port,
+					       database,
+					       table,
 					       this.userName);
 		}
 	}

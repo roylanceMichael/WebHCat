@@ -14,7 +14,7 @@
 
 		private readonly bool useKerberos;
 
-		public WebClientBuilder(CredentialModel credentials, bool useKerberos)
+		public WebClientBuilder(Credential credentials, bool useKerberos)
 		{
 			credentials.CheckWhetherArgumentIsNull("credentials");
 			this.credentials = credentials.Credentials;

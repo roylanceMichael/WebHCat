@@ -2,8 +2,6 @@
 {
 	using System.Collections.Generic;
 
-	using Newtonsoft.Json;
-
 	using Roylance.WebHCatalogLib.Models;
 	using Roylance.WebHCatalogLib.Resources;
 	using System.Threading.Tasks;
@@ -12,33 +10,33 @@
 	{
 		private const string WebHdfsLocation = "hdfs://{0}:{1}/{2}";
 
-		private readonly ServerInfoModel hdfsInfo;
+		private readonly ServerInformation hdfsInformation;
 
 		private readonly UrlBuilder urlBuilder;
 
 		private readonly WebClientBuilder webClientBuilder;
 
-		public WebHCatalogClient(ServerInfoModel hCatalogInfo, ServerInfoModel hdfsInfo, CredentialModel credentials, bool useKerberos = false)
+		public WebHCatalogClient(ServerInformation hCatalogInformation, ServerInformation hdfsInformation, Credential credentials, bool useKerberos = false)
 		{
-			hCatalogInfo.CheckWhetherArgumentIsNull("hCatalogInfo");
-			hdfsInfo.CheckWhetherArgumentIsNull("hdfsInfo");
+			hCatalogInformation.CheckWhetherArgumentIsNull("hCatalogInformation");
+			hdfsInformation.CheckWhetherArgumentIsNull("hdfsInformation");
 			credentials.CheckWhetherArgumentIsNull("networkCredential");
 
-			this.hdfsInfo = hdfsInfo;
-			this.urlBuilder = new UrlBuilder(hCatalogInfo, credentials, useKerberos);
+			this.hdfsInformation = hdfsInformation;
+			this.urlBuilder = new UrlBuilder(hCatalogInformation, credentials, useKerberos);
 			this.webClientBuilder = new WebClientBuilder(credentials, useKerberos);
 		}
 
-		public Task<GetDatabasesModel> GetDatabases()
+		public Task<GetDatabasesResponse> GetDatabases()
 		{
 			var databaseUrl = this.urlBuilder.GetDatabasesUrl();
 
-			return Task<GetDatabasesModel>.Factory.StartNew(
+			return Task<GetDatabasesResponse>.Factory.StartNew(
 				() =>
 				{
 					using (var client = this.webClientBuilder.BuildWebClient())
 					{
-						return client.GetJson<GetDatabasesModel>(databaseUrl);
+						return client.GetJson<GetDatabasesResponse>(databaseUrl);
 					}
 				});
 		}
@@ -58,43 +56,66 @@
 				});
 		}
 
-		public Task<bool> CreateDatabase(string database, string comment, string location)
+		public Task<bool> CreateDatabase(CreateDatabaseRequest createDatabaseRequest)
 		{
-			var createDatabaseUrl = this.urlBuilder.CreateDatabaseUrl(database);
+			createDatabaseRequest.CheckWhetherArgumentIsNull("createDatabaseRequest");
 
-			var jsonDictionary = new Dictionary<string, string>();
+			var createDatabaseUrl = this.urlBuilder.CreateDatabaseUrl(createDatabaseRequest.Database);
 
-			jsonDictionary["location"] = WebHdfsLocation.FormatTemplate(this.hdfsInfo.Server, this.hdfsInfo.Port, location);
-
-			if (!string.IsNullOrWhiteSpace(comment))
-			{
-				jsonDictionary["comment"] = comment;
-			}
-
-			var inputJson = JsonConvert.SerializeObject(jsonDictionary);
+			// TODO: think of a more elegant way to do this
+			createDatabaseRequest.Location = WebHdfsLocation.FormatTemplate(
+				this.hdfsInformation.Server,
+				this.hdfsInformation.Port,
+				createDatabaseRequest.Location);
 
 			return Task<bool>.Factory.StartNew(
 				() =>
 				{
 					using (var restService = this.webClientBuilder.BuildWebClient())
 					{
-						var response = restService.PutJson<Dictionary<string, string>>(createDatabaseUrl, inputJson);
+						var response = restService.PutJson<Dictionary<string, string>>(createDatabaseUrl, createDatabaseRequest.ToJson());
 
 						// project response to true/false
-						return response.ContainsKey("database") && response.ContainsValue(database);
+						return response.ContainsKey("database") && response.ContainsValue(createDatabaseRequest.Database);
 					}
 				});
 		}
 
-		public Task<GetTablesModel> GetTables(string database)
+		public Task<GetTablesResponse> GetTables(string database)
 		{
+			database.CheckWhetherArgumentIsNull("database");
+
 			var getTablesUrl = this.urlBuilder.GetTablesUrl(database);
-			return Task<GetTablesModel>.Factory.StartNew(
+			return Task<GetTablesResponse>.Factory.StartNew(
 				() =>
 				{
 					using (var restService = this.webClientBuilder.BuildWebClient())
 					{
-						return restService.GetJson<GetTablesModel>(getTablesUrl);
+						return restService.GetJson<GetTablesResponse>(getTablesUrl);
+					}
+				});
+		}
+
+		public Task<bool> CreateTable(CreateTableRequest createTableRequest)
+		{
+			createTableRequest.CheckWhetherArgumentIsNull("createTableRequest");
+
+			var createTablesUrl = this.urlBuilder.CreateTableUrl(createTableRequest.Database, createTableRequest.Table);
+
+			return Task<bool>.Factory.StartNew(
+				() =>
+				{
+					using (var restService = this.webClientBuilder.BuildWebClient())
+					{
+						var requestJson = createTableRequest.ToJson();
+						var dictionaryResult = restService.PutJson<Dictionary<string, string>>(
+							createTablesUrl,
+							requestJson);
+
+						return dictionaryResult.ContainsKey("table") &&
+							dictionaryResult.ContainsValue(createTableRequest.Table) &&
+							dictionaryResult.ContainsKey("database") &&
+							dictionaryResult.ContainsValue(createTableRequest.Database);
 					}
 				});
 		}

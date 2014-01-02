@@ -2,7 +2,7 @@
 
 namespace Roylance.WebHCatalogLib.Models
 {
-	public class GetTablesModel
+	public class GetTablesResponse
 	{
 		public string Database { get; set; }
 

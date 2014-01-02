@@ -6,12 +6,14 @@
 
 	public interface IWebHCatalogClient
 	{
-		Task<GetDatabasesModel> GetDatabases();
+		Task<GetDatabasesResponse> GetDatabases();
 
-		Task<bool> CreateDatabase(string database, string comment, string location);
+		Task<bool> CreateDatabase(CreateDatabaseRequest createDatabaseRequest);
 
 		Task<bool> DeleteDatabase(string database);
 
-		Task<GetTablesModel> GetTables(string database);
+		Task<GetTablesResponse> GetTables(string database);
+
+		Task<bool> CreateTable(CreateTableRequest createTableRequest);
 	}
 }

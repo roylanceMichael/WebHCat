@@ -2,9 +2,9 @@
 {
 	using System.Net;
 
-	public class CredentialModel
+	public class Credential
 	{
-		public CredentialModel(string userName, string password = null)
+		public Credential(string userName, string password = null)
 		{
 			this.UserName = userName;
 			this.Credentials = new NetworkCredential(userName, password);

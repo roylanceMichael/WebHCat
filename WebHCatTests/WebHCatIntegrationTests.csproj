@@ -51,7 +51,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WebHCatalogClientTests.cs" />
+    <Compile Include="TableTests.cs" />
+    <Compile Include="TestBase\WebHCatalogClientTestBase.cs" />
+    <Compile Include="DatabaseTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebHCatalogLib\WebHCatalogLib.csproj">
