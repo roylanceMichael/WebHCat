@@ -91,5 +91,23 @@
 					       table,
 					       this.userName);
 		}
+
+		public string DeleteTableUrl(string database, string table)
+		{
+			database.CheckWhetherArgumentIsNull("database");
+			table.CheckWhetherArgumentIsNull("table");
+
+			const string DeleteTableTemplate = "http://{0}:{1}/templeton/v1/ddl/database/{2}/table/{3}";
+			const string DeleteTableTemplateNoKerberos = DeleteTableTemplate + "?user.name={4}";
+
+			return this.useKerberos
+				       ? DeleteTableTemplate.FormatTemplate(this.hCatInformation.Server, this.hCatInformation.Port, database, table)
+				       : DeleteTableTemplateNoKerberos.FormatTemplate(
+					       this.hCatInformation.Server,
+					       this.hCatInformation.Port,
+					       database,
+					       table,
+					       this.userName);
+		}
 	}
 }

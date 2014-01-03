@@ -15,5 +15,7 @@
 		Task<GetTablesResponse> GetTables(string database);
 
 		Task<bool> CreateTable(CreateTableRequest createTableRequest);
+
+		Task<bool> DeleteTable(string database, string table);
 	}
 }

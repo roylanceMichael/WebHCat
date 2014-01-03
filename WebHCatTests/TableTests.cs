@@ -121,5 +121,49 @@
 
 			Assert.IsTrue(getTablesTask.Result.Tables.Contains(uniqueTableName));
 		}
+
+		[TestMethod]
+		public void DeletesTable()
+		{
+			// arrange
+			this.CreateDatabaseIfNotExists();
+			var uniqueTableName = BuildUniqueName();
+
+			var createTableRequest = new CreateTableRequest
+			{
+				Database = DatabaseName,
+				Table = uniqueTableName,
+				Comment = "what is this",
+				Columns = new List<Column>
+																		           {
+																			           new Column
+																				           {
+																					           Name = "id",
+																										 Type = ColumnTypes.BigInt
+																				           }
+																		           }
+
+			};
+
+			var client = BuildHCatalogClient();
+			var task = client.CreateTable(createTableRequest);
+			task.Wait();
+			Assert.IsTrue(task.Result);
+
+			var getTablesTask = client.GetTables(DatabaseName);
+			getTablesTask.Wait();
+
+			Assert.IsTrue(getTablesTask.Result.Tables.Contains(uniqueTableName));
+
+			// act
+			var deleteTableTask = client.DeleteTable(DatabaseName, uniqueTableName);
+			deleteTableTask.Wait();
+
+			// assert
+			Assert.IsTrue(deleteTableTask.Result);
+			getTablesTask = client.GetTables(DatabaseName);
+			getTablesTask.Wait();
+			Assert.IsFalse(getTablesTask.Result.Tables.Contains(uniqueTableName));
+		}
 	}
 }

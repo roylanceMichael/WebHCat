@@ -119,5 +119,24 @@
 					}
 				});
 		}
+
+		public Task<bool> DeleteTable(string database, string table)
+		{
+			database.CheckWhetherArgumentIsNull("database");
+			table.CheckWhetherArgumentIsNull("table");
+
+			var deleteTableUrl = this.urlBuilder.DeleteTableUrl(database, table);
+
+			return Task<bool>.Factory.StartNew(
+				() =>
+					{
+						using (var restService = this.webClientBuilder.BuildWebClient())
+						{
+							var dictionaryResult = restService.DeleteJson<Dictionary<string, string>>(deleteTableUrl, string.Empty);
+							return dictionaryResult.ContainsKey("table") && dictionaryResult.ContainsValue(table)
+							       && dictionaryResult.ContainsKey("database") && dictionaryResult.ContainsValue(database);
+						}
+					});
+		}
 	}
 }
