@@ -34,7 +34,7 @@
 
 			var client = BuildHCatalogClient();
 
-			var createDatabaseRequest = new CreateDatabaseRequest { Location = DatabaseLocation, Database = uniqueName };
+			var createDatabaseRequest = new CreateDatabaseRequest { Database = uniqueName, Location = DatabaseLocation };
 
 			var createDbTask = client.CreateDatabase(createDatabaseRequest);
 			createDbTask.Wait();

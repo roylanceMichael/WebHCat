@@ -24,6 +24,7 @@
 																	 Database = DatabaseName,
 																	 Table = uniqueTableName,
 																	 Comment = "what is this",
+																	 Location = "/testtable",
 																	 Columns = new List<Column>
 																		           {
 																			           new Column
@@ -134,6 +135,7 @@
 				Database = DatabaseName,
 				Table = uniqueTableName,
 				Comment = "what is this",
+				Location = "/testtable",
 				Columns = new List<Column>
 																		           {
 																			           new Column

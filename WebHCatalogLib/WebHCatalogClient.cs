@@ -8,21 +8,15 @@
 
 	public class WebHCatalogClient : IWebHCatalogClient
 	{
-		private const string WebHdfsLocation = "hdfs://{0}:{1}/{2}";
-
-		private readonly ServerInformation hdfsInformation;
-
 		private readonly UrlBuilder urlBuilder;
 
 		private readonly WebClientBuilder webClientBuilder;
 
-		public WebHCatalogClient(ServerInformation hCatalogInformation, ServerInformation hdfsInformation, Credential credentials, bool useKerberos = false)
+		public WebHCatalogClient(ServerInformation hCatalogInformation, Credential credentials, bool useKerberos = false)
 		{
 			hCatalogInformation.CheckWhetherArgumentIsNull("hCatalogInformation");
-			hdfsInformation.CheckWhetherArgumentIsNull("hdfsInformation");
 			credentials.CheckWhetherArgumentIsNull("networkCredential");
 
-			this.hdfsInformation = hdfsInformation;
 			this.urlBuilder = new UrlBuilder(hCatalogInformation, credentials, useKerberos);
 			this.webClientBuilder = new WebClientBuilder(credentials, useKerberos);
 		}
@@ -61,12 +55,6 @@
 			createDatabaseRequest.CheckWhetherArgumentIsNull("createDatabaseRequest");
 
 			var createDatabaseUrl = this.urlBuilder.CreateDatabaseUrl(createDatabaseRequest.Database);
-
-			// TODO: think of a more elegant way to do this
-			createDatabaseRequest.Location = WebHdfsLocation.FormatTemplate(
-				this.hdfsInformation.Server,
-				this.hdfsInformation.Port,
-				createDatabaseRequest.Location);
 
 			return Task<bool>.Factory.StartNew(
 				() =>
